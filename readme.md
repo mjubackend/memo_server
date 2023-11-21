@@ -25,7 +25,7 @@ $ flask --app memo run --port 포트 번호
 $ python3 memo.py
 ```
 
-후자의 경우 memo.py 안에서 port 번호 5000번을 기본값으로 사용하고 있으니 필요시 수정하세요.
+후자의 경우 memo.py 안에서 port 번호 8000번을 기본값으로 사용하고 있으니 필요시 수정하세요.
 
 # 동작 설명
 
@@ -115,7 +115,7 @@ DB 는 본인이 원하는 DB 중 어떤 것이라도 쓸 수 있습니다. (예
 * 기본으로 주어진 `templates/index.html`
 * 실행 방법 및 코드 설명을 담고 있는 `readme.md` 파일
 
-* `AWS` 상에 `ELB` 를 통해서 실제 배포된 실행 환경 (**이 부분은 곧 이어지는 수업 시간에서 다루게 됩니다.**)
+* `AWS` 상에 `ELB` 를 통해서 실제 배포된 실행 환경 (**이 부분은 11월 22일 강의 자료인 24 - AWS Loadbalancer.pptx 을 참고하시기 바랍니다.**)
 
 # 테스트용 서버
 
@@ -125,4 +125,5 @@ DB 는 본인이 원하는 DB 중 어떤 것이라도 쓸 수 있습니다. (예
 $ ssh -L8000:localhost:10011 -p 10022 본인아이디@sysdesignlab.mju.ac.kr
 ```
 
-그 뒤에 브라우저에 `http://localhost:8000` 을 입력해서 테스트 해볼 수 있습니다.
+그 뒤에 브라우저에 `http://localhost:8000` 을 입력해서 테스트 해볼 수 있습니다. 
+주의: 네이버 앱 등록시 redirect uri 를 `http://localhost:8000/auth` 로 했기 때문에 `ssh -L8000:localhost:10011` 형태로 하셔야 됩니다. 

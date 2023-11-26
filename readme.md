@@ -127,3 +127,9 @@ $ ssh -L8000:localhost:10011 -p 10022 본인아이디@sysdesignlab.mju.ac.kr
 
 그 뒤에 브라우저에 `http://localhost:8000` 을 입력해서 테스트 해볼 수 있습니다. 
 주의: 네이버 앱 등록시 redirect uri 를 `http://localhost:8000/auth` 로 했기 때문에 `ssh -L8000:localhost:10011` 형태로 하셔야 됩니다. 
+
+## 테스트용 서버 직접 띄워보기
+
+본 git repo 의 `references/` 아래에는 테스트용 서버를 직접 띄워볼 수 있도록 모듈을 포함하고 있습니다. 해당 모듈은 text 로 된 python 파일이 아니라 parmor 를 통해서 난독화된 결과물을 담고 있습니다. 따라서 OS 별로 구분해서 실행해야 되는데, Windows, Linux, macOS 용으로 띄워볼 수 있습니다.
+
+해당 모듈은 `localhost` 에 있는 `redis` 와 `mongodb` 를 접속합니다. 따라서 본 모듈을 실행하기 위해서는 `docker` 를 통해서 redis 와 mongodb 를 먼저 실행하고 `Flask` app 을 실행하던 방식으로 모듈을 실행하면 됩니다.

@@ -130,6 +130,6 @@ $ ssh -L8000:localhost:10011 -p 10022 본인아이디@sysdesignlab.mju.ac.kr
 
 ## 테스트용 서버 직접 띄워보기
 
-본 git repo 의 `references/` 아래에는 테스트용 서버를 직접 띄워볼 수 있도록 모듈을 포함하고 있습니다. 해당 모듈은 text 로 된 python 파일이 아니라 parmor 를 통해서 난독화된 결과물을 담고 있습니다. 따라서 OS 별로 구분해서 실행해야 되는데, Windows, Linux, macOS 용으로 띄워볼 수 있습니다.
+본 git repo 의 `references/` 아래에는 테스트용 서버를 직접 띄워볼 수 있도록 모듈을 포함하고 있습니다. 해당 모듈은 text 로 된 python 파일이 아니라 parmor 를 통해서 난독화된 결과물을 담고 있습니다. 따라서 OS 별로 구분해서 실행해야 되는데, Windows, Linux, Intel CPU 사용 macOS 용으로 띄워볼 수 있습니다.
 
-해당 모듈은 `localhost` 에 있는 `redis` 와 `mongodb` 를 접속합니다. 따라서 본 모듈을 실행하기 위해서는 `docker` 를 통해서 redis 와 mongodb 를 먼저 실행하고 `Flask` app 을 실행하던 방식으로 모듈을 실행하면 됩니다.
+해당 모듈은 `localhost` 에 있는 `redis` 와 `mongodb` 를 접속합니다. 따라서 본 모듈을 실행하기 위해서는 `docker` 를 통해서 redis 와 mongodb 를 먼저 실행하고 `Flask` app 을 실행하던 방식으로 모듈을 실행하면 됩니다. (먼저 위에 설명된 대로 `pip install -r requirements.txt` 를 실행하는 것을 잊지 마세요.)

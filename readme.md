@@ -2,7 +2,7 @@
 
 memo.py 는 Python3 Flask 로 되어있습니다.
 
-**본 과제는 실습 서버가 아니라 본인 컴퓨터에서 작업하기 바랍니다.**
+**본 과제는 최종적으로 AWS 에 서비스가 동작해야 됩니다. 실습 서버에서 개발 후 AWS 로 옮겨 설치해도 되고, AWS 에서 바로 작업을 해도 무방합니다.**
 
 # 필요 패키지 설치
 
@@ -15,23 +15,23 @@ $ pip install -r requirements.txt
 
 # 실행 예시
 
-일반적인 flask 실행 방식대로 실행하면 됩니다.
+일반적인 flask 실행 방식대로 실행하면 됩니다. 다만 bind 하는 주소를 0.0.0.0 으로 하기 위해서 `--host` 옵션을 추가합니다.
 
 ```
-$ flask --app memo run --port 포트 번호
+$ flask --app memo run --port 포트 번호 --host 0.0.0.0
 ```
 또는
 ```
 $ python3 memo.py
 ```
 
-후자의 경우 memo.py 안에서 port 번호 8000번을 기본값으로 사용하고 있으니 필요시 수정하세요.
+후자의 방법으로 실행할 경우 memo.py 안에서 port 번호 8000번을 기본값으로 사용하고 있으니 이 부분은 수정하세요.
 
 # 동작 설명
 
 ## index.html 읽어 오기
 
-memo.py 를 실행하고 브라우저에서 `http://localhost:포트번호` 처럼 접근할 경우 `index.html` 을 읽어오게 됩니다.
+`memo.py` 를 실행하고 브라우저에서 `http://mjubackend.duckdns.org:본인포트번호` 처럼 접근할 경우 `index.html` 을 읽어오게 됩니다.
 
 이는 `Flask` 의 `template` 기능을 사용하고 있으며, 사용되고 있는 `index.html` 의 template file 은 `templates/index.html` 에 위치하고 있습니다.
 
@@ -41,7 +41,7 @@ memo.py 를 실행하고 브라우저에서 `http://localhost:포트번호` 처�
 
 `index.html` 은 `memo.py` 에 다음 API 들을 호출합니다.
 
-* `GET /login` : authorization code 를 얻어오는 URL 로 redirect 시켜줄 것을 요청합니다. (아래 설명)
+* `GET /login` : authorization code 를 얻어오는 URL 로 redirect 시켜줄 것을 요청합니다. (아래 `네이버 로그인 API 호출` 설명 참고)
 
 * `GET /memo` : 현재 로그인한 유저가 작성한 메모 목록을 JSON 으로 얻어옵니다. 결과 JSON 은 다음과 같은 형태가 되어야 합니다.
   ```
@@ -72,55 +72,114 @@ memo.py 를 실행하고 브라우저에서 `http://localhost:포트번호` 처�
 어떤 경우든 DB 에서 해당 유저의 정보를 얻어낼 수 있도록 `userId` 라는 `HTTP cookie` 를 설정합니다.
 
 
-# 과제 내용
+# 과제 목표
 
-`memo.py` 의 내용을 채워서 메모장이 동작하게 하는 것이 과제의 목표입니다.
+`memo.py` 의 내용을 채워서 메모장이 동작하게 구현하고 이를 AWS 에 Application load balancer 를 이용해 서비스를 구성하는 것이 과제의 목표입니다.
 
-## `def home()`
+# Part1: memo.py 구현하기
+
+## 1) `def home()`
 
 `userId` 쿠키가 설정되어 있는 경우 DB 에서 해당 유저의 이름을 읽어와서 `index.html` template 에 반영하는 동작이 누락되어 있습니다.
 
-## Redirect URI 에 대응되는 함수 (예: `def onOAuthAuthorizationCodeRedirected()`)
+## 2) `def onOAuthAuthorizationCodeRedirected()`
 
-본인이 네이버 앱 등록시 설정한 Redirect URI 에 대응되는 주소의 handler 를 `memo.py` 에 구현해야됩니다. 현재 `memo.py` 에는 `memo.py` 가 8000 번 포트에 뜰 것이라고 가정하고 `http://localhost:8000/auth` 와 같은 형태로 네이버 앱 등록에 Redirect URI 가 지정된 것으로 가정해서 `def onOAuthAuthorizationCodeRedirected()` 에 `@app.route('/auth')` 라는 태깅이 되어있습니다. 만일 본인이 등록한 Redirect URI 와 이와 다르다면 `@app.route()` 을 적절히 수정해야 됩니다.
+현재 `def onOAuthAuthorizationCodeRedirected()` 의 내용은 비어있습니다. 해당 함수에 코멘트로 표시된 대로 단계 1 ~ 4 까지를 채워 넣어야 합니다.
 
-그리고 현재 `def onOAuthAuthorizationCodeRedirected()` 의 내용은 비어있습니다. 코멘트로 표시된 대로 단계 1 ~ 4 까지를 채워 넣어야 합니다.
-
-## `def getMemos()`
+## 3) `def getMemos()`
 
 메모 목록을 DB 로부터 읽어오는 부분이 빠져있습니다. 현재 로그인한 유저의 메모들을 읽어올 수 있어야 합니다.
 
-## `def post_new_memo()`
+## 4) `def post_new_memo()`
 
 새 메모를 DB 에 저장하는 부분이 빠져있습니다. 현재 로그인한 유저의 메모로 저장되어야 합니다.
 
 
-# DB 사용
+# Part2: DB 사용
 
 DB 는 본인이 원하는 DB 중 어떤 것이라도 쓸 수 있습니다. (예: MySQL, MariaDB, Redis, MongoDB) DB 를 하나만 써도 되고 필요하다면 여러 DB 를 사용해도 무방합니다.
 
 단 DB 설치는 docker 를 통해서 이루어져야 합니다. Docker 에 대한 설명은 수업 시간 강의 내용을 참고해주세요.
 
+## 1) 실습 서버에서 DB 컨테이너 띄우기
+
+수업 시간에 docker 에 대해서 배운대로 DB 를 띄우면 됩니다. 다른 학생과 포트가 겹치지 않도록 `-p` 옵션을 이용해 50000 + 실습번호 형태로 사용하기 바랍니다.
+
+## 2) AWS 에 서비스를 구성할 때 DB 띄우기
+
+DB 용 Ubuntu 가상 서버를 하나 띄우고, 그 가상 서버에서 docker 를 이용해 동일한 DB 를 띄웁니다.
+가상 서버를 만든 후 Docker 의 설치는 다음 명령을 이용합니다.
+```
+$ sudo apt-get install docker.io
+```
+그리고 docker 명령을 할 때는 `sudo` 를 앞에 붙여서 실행하세요. (예: `$ sudo docker container ps`)
+원래 docker 는 관리자 권한이 있어야 되는데, 실습 서버에서는 교수가 여러분 아이디가 sudo 없이 docker 를 수행할 수 있게 설정했었습니다. 그때문에 AWS 에서 가상 서버를 만든 경우에는 `sudo` 를 앞에 붙여 줘야 합니다.
+
+구현한 메모 서비스는 DB 서버에 접근할 때 DB 서버의 private IP 를 이용합니다. public IP 를 이용하거나 Elastic IP 를 부여해서 접근하는 경우는 감점 처리 되니 주의하세요.
+
+# Part3: AWS 에 서비스 구성
+
+## 1) 서비스 서버 구성
+
+* 교수가 공유한 `mjubackend` AMI 를 이용해서 가상 서버를 만듭니다.
+* 이 때 서비스 서버는 ssh 와 http 만 열려 있도록 security group 을 설정합니다.
+* `mjubackend` AMI 이미지는 TCP 80 번 포트에 nginx 를 동작시키고 있습니다.
+* nginx 설정에서는 `/memo` 라는 경로가 들어오면 `127.0.0.1:30001` 를 통해서 uwsgi 를 호출하게 되어있습니다.
+* 127.0.0.1:30001 에는 uwsgi 가 동작하고 있습니다. 이 때 uwsgi 의 설정 파일은 홈 디렉터리 아래 있는 `uwsgi.ini` 파일입니다. (`$ netstat -an | grep 30001` 로 확인해보세요)
+* 서비스로 돌고 있는 uwsgi 는 홈디렉터리 아래 있는 `/memo` 경로에 대해서 `memo.py` 를 호출합니다.
+* 따라서 여러분이 작성한 `memo.py`, `references/`, `templates/` 을 복사해 오면 별다른 문제 없이 `http://서비스서버publicIP/memo` 접근 가능 여부를 확인해볼 수 있습니다.
+* **(중요)**: 담당 교수가 서비스 서버에 로그인해볼 수 있도록 다음의 SSH public key 를 `authorized_keys` 파일에 추가합니다. ```ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHyI345QnkwdhuOcV/AUTYbxKZ8u1ayqjzduSCsQ6jAd dkmoon@dkmoon-desktop```
+
+## 2) DB 서버 만들기
+
+* DB 용 Ubuntu 가상 서버를 만들고 docker 를 이용해 여러분이 사용한 DB 를 띄웁니다.
+* 서비스 서버는 DB 서버에 private IP 를 통해서 접속하도록 설정합니다.
+* **(중요)**: 담당 교수가 서비스 서버에 로그인해볼 수 있도록 다음의 SSH public key 를 `authorized_keys` 파일에 추가합니다. ```ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHyI345QnkwdhuOcV/AUTYbxKZ8u1ayqjzduSCsQ6jAd dkmoon@dkmoon-desktop```
+  
+## 3) 서비스 서버 이미지 만들기
+
+* 여러분이 작성한 `memo.py`, `references/`, `templates/` 을 복사한 뒤 가상 서버를 커스터마이징 했으면, 이 가상 서버를 이용해 AMI 이미지를 만들도록 합니다.
+* 여기서 만들어진 이미지를 이용해 launch template 을 작성할 겁니다.
+
+## 4) Launch template 작성
+
+* 앞에서 만든 AMI 를 통해서 launch template 을 작성합니다.
+* 사양은 `t2.micro` 로 하고, ssh 와 http 만 열려 있도록 security group 을 설정합니다.
+
+## 5) Target group (서버팜) 생성
+
+* 대상 그룹 (target group) 으로 server farm 을 만듭니다.
+
+## 6) Application 로드 밸런서 생성
+
+* 앞서 생성한 target group 을 위해서 Application 로드 밸런서를 만듧니다.
+
+## 7) Auto scaling 설정
+
+* Auto scaling group 을 만들어서 로드 밸런서가 최대 1대부터 최대 2대까지 서버를 자동 생성하게 설정합니다.
+
+## 주의할 점
+
+* `memo.py` 를 복사해올 때 redirect URI 나 DB 주소가 하드코딩 되어있을 경우 AWS 에 서비스를 구성할 때는 이들을 모두 수정해야 합니다.
+
+
 # 평가 항목
 
-* 네이버 OAuth 가 제대로 구현되었는가?
-* `GET /memo` 가 제대로 구현되었는가?
-* `POST /memo` 가 제대로 구현되었는가?
-* 유저를 바꿔서 사용하는 경우 사용자 구분이 잘 되는가?
+* AWS 의 application load balancer 의 DNS 주소를 통해서 서비스가 잘 동작하는가?
+- 네이버 OAuth 가 제대로 구현되었는가?
+- `GET /memo` 가 제대로 구현되었는가?
+-  `POST /memo` 가 제대로 구현되었는가?
+-  지시한 대로 AWS 에 서비스가 구성되었는가?
 
 # 제출물
 
 본인 github repo 에 `memo_server` 라는 서브폴더를 만들어서 다음 파일들을 제출하세요.
-* 완성된 `memo.py`
-* 기본으로 주어진 `templates/index.html`
+* 완성된 `memo.py` 를 포함해서 수정 혹은 추가한 파일들
 * 실행 방법 및 코드 설명을 담고 있는 `readme.md` 파일
+* `AWS` 상에 동작하고 있는 배포된 실행 환경
 
-* `AWS` 상에 `ELB` 를 통해서 실제 배포된 실행 환경 (**이 부분은 11월 22일 강의 자료인 24 - AWS Loadbalancer.pptx 을 참고하시기 바랍니다.**)
+# 실행 환경 채점 관련 (반복되는) 코멘트
 
-# 테스트용 서버
-
-본 git repo 의 `references/` 아래에는 테스트용 서버를 직접 띄워볼 수 있도록 모듈을 포함하고 있습니다. 해당 모듈은 text 로 된 python 파일이 아니라 parmor 를 통해서 난독화된 결과물을 담고 있습니다. 따라서 OS 별로 구분해서 실행해야 되는데, Windows, Linux, Intel CPU 사용 macOS 용으로 띄워볼 수 있습니다.
-
-해당 모듈은 `localhost` 에 있는 `redis` 와 `mongodb` 를 접속합니다. 따라서 본 모듈을 실행하기 위해서는 `docker` 를 통해서 redis 와 mongodb 를 먼저 실행하고 `Flask` app 을 실행하던 방식으로 모듈을 실행하면 됩니다. (먼저 위에 설명된 대로 `pip install -r requirements.txt` 를 실행하는 것을 잊지 마세요.)
-
-각 OS 별 디렉터리 안에 있는 `config.json` 안에 Naver 에 등록된 app 의 client id, client secret, redirect URI 를 지정할 수 있습니다. 그 파일의 내용을 수정하고 Flask app 을 띄우듯이 실행하면 됩니다. `config.json` 을 읽게 한 것은 테스트용 서버를 각 학생에 맞게 수정하기 위한 것이고, 제출하는 결과물은 이처럼 `config.json` 을 읽도록 하지 않아도 됩니다.
+* 교수는 여러분의 AWS 콘솔에 로그인할 수 있습니다.
+* 그러나 콘솔에 로그인할 수 있는 것과 가상 서버에 로그인할 수 있는 것은 별개이니 위에 언급된 SSH public key 를 반드시 가상 서버의 `authorized_keys` 에 포함시켜서 교수가 ssh 로그인 할 수 있게 하세요.
+* 만일 ssh 로그인을 못해서 채점을 못할 경우 불이익은 해당 학생이 책임져야 합니다.

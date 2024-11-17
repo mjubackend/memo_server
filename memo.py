@@ -9,18 +9,17 @@ from flask import abort, Flask, make_response, render_template, Response, redire
 app = Flask(__name__)
 
 
-naver_client_id = '본인 app 의 것으로 교체할 것'
-naver_client_secret = '본인 app 의 것으로 교체할 것'
+naver_client_id = 'developers.naver.com 에 등록한 본인 app 의 것으로 교체할 것'
+naver_client_secret = 'developers.naver.com 에 등록한 본인 app 의 것으로 교체할 것'
 naver_redirect_uri = '''
-  본인 app 의 것으로 교체할 것.
-  여기 지정된 url 이 http://localhost:8000/auth 처럼 /auth 인 경우
-  아래 onOAuthAuthorizationCodeRedirected() 에 @app.route('/auth') 태깅한 것처럼 해야 함
+  실습서버에서 사용할 경우 http://mjubackend.duckdns.org:본인포트번호/auth 로 하고,
+  AWS 에 배포할 때는 http://본인로드밸런서의DNS주소/auth 로 할 것.
 '''
 
 
 @app.route('/')
 def home():
-    # 쿠기를 통해 이전에 로그인 한 적이 있는지를 확인한다.
+    # HTTP 세션 쿠키를 통해 이전에 로그인 한 적이 있는지를 확인한다.
     # 이 부분이 동작하기 위해서는 OAuth 에서 access token 을 얻어낸 뒤
     # user profile REST api 를 통해 유저 정보를 얻어낸 뒤 'userId' 라는 cookie 를 지정해야 된다.
     # (참고: 아래 onOAuthAuthorizationCodeRedirected() 마지막 부분 response.set_cookie('userId', user_id) 참고)
@@ -62,9 +61,7 @@ def onLogin():
     return redirect(url)
 
 
-# 아래는 Redirect URI 로 등록된 경우 호출된다.
-# 만일 본인의 Redirect URI 가 http://localhost:8000/auth 의 경우처럼 /auth 대신 다른 것을
-# 사용한다면 아래 @app.route('/auth') 의 내용을 그 URL 로 바꿀 것
+# 아래는 Authorization code 가 발급된 뒤 Redirect URI 를 통해 호출된다.
 @app.route('/auth')
 def onOAuthAuthorizationCodeRedirected():
     # TODO: 아래 1 ~ 4 를 채워 넣으시오.

@@ -41,7 +41,7 @@ $ python3 memo.py
 
 `index.html` 은 `memo.py` 에 다음 API 들을 호출합니다.
 
-* `GET /login` : authorization code 를 얻어오는 URL 로 redirect 시켜줄 것을 요청합니다. (아래 `네이버 로그인 API 호출` 설명 참고)
+* `GET /login` : authorization code 를 얻어오는 URL 로 redirect 시켜줄 것을 요청합니다. (아래 [네이버 로그인 API 호출](#네이버-로그인-API-호출) 설명 참고)
 
 * `GET /memo` : 현재 로그인한 유저가 작성한 메모 목록을 JSON 으로 얻어옵니다. 결과 JSON 은 다음과 같은 형태가 되어야 합니다.
   ```
@@ -62,6 +62,10 @@ $ python3 memo.py
 그런데 코드를 보면 `index.html` 에서 해당 API 동작을 바로 시작하는 것이 아니라 `GET /login` 을 통해서 서버에게 해당 REST API 로 redirect 시켜달라고 하는 방식으로 브라우저가 API 를 호출합니다. 이는 Chrome 계열의 브라우저의 `CORS` 문제 때문에 그렇습니다.
 
 비록 서버가 redirect 해주는 방식을 사용하고는 있지만, 클라이언트인 브라우저가 그 API 를 직접 호출한다는 점은 동일합니다.
+
+네이버 로그인을 사용하기 위해서는 수업 시간에 설명한 대로 [네이버 개발자 센터](https://developers.naver.com) 에 애플리케이션을 만들고 로그인 API 를 추가해야됩니다.
+
+거기서 얻어진 client id, client secret, redirect uri 를 `memo.py` 의 소스 코드 안에 복사해 놔야 됩니다.
 
 ## 로그인 혹은 가입 처리
 

@@ -41,11 +41,9 @@ def home():
 
 
 # 로그인 버튼을 누른 경우 이 API 를 호출한다.
-# OAuth flow 상 브라우저에서 해당 URL 을 바로 호출할 수도 있으나,
-# 브라우저가 CORS (Cross-origin Resource Sharing) 제약 때문에 HTML 을 받아온 서버가 아닌 곳에
-# HTTP request 를 보낼 수 없는 경우가 있다. (예: 크롬 브라우저)
-# 이를 우회하기 위해서 브라우저가 호출할 URL 을 HTML 에 하드코딩하지 않고,
+# 브라우저가 호출할 URL 을 index.html 에 하드코딩하지 않고,
 # 아래처럼 서버가 주는 URL 로 redirect 하는 것으로 처리한다.
+# 이는 CORS (Cross-origin Resource Sharing) 처리에 도움이 되기도 한다.
 #
 # 주의! 아래 API 는 잘 동작하기 때문에 손대지 말 것
 @app.route('/login')
@@ -84,6 +82,13 @@ def onOAuthAuthorizationCodeRedirected():
 
 
     # 5. 첫 페이지로 redirect 하는데 로그인 쿠키를 설정하고 보내준다.
+    #    user_id 쿠키는 "dkmoon" 처럼 정말 user id 를 바로 집어 넣는 것이 아니다.
+    #    그렇게 바로 user id 를 보낼 경우 정보가 노출되기 때문이다.
+    #    대신 user_id cookie map 을 두고, random string -> user_id 형태로 맵핑을 관리한다.
+    #      예: user_id_map = {}
+    #          key = random string 으로 얻어낸 a1f22bc347ba3 이런 문자열
+    #          user_id_map[key] = real_user_id
+    #          user_id = key
     response = redirect('/')
     response.set_cookie('userId', user_id)
     return response

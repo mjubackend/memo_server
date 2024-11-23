@@ -182,8 +182,10 @@ $ sudo apt-get install docker.io
 * 실행 방법 및 코드 설명을 담고 있는 `readme.md` 파일
 * `AWS` 상에 동작하고 있는 배포된 실행 환경
 
-# 실행 환경 채점 관련 (반복되는) 코멘트
+# 실행 환경 채점 관련 코멘트
 
 * 교수는 여러분의 AWS 콘솔에 로그인할 수 있습니다.
 * 그러나 콘솔에 로그인할 수 있는 것과 가상 서버에 로그인할 수 있는 것은 별개이니 위에 언급된 SSH public key 를 반드시 가상 서버의 `authorized_keys` 에 포함시켜서 교수가 ssh 로그인 할 수 있게 하세요.
 * 만일 ssh 로그인을 못해서 채점을 못할 경우 불이익은 해당 학생이 책임져야 합니다.
+* **developers.naver.com 에서 본인의 app 의 tester 에 `mjubackend` 계정을 추가해주세요**
+  ![image](https://github.com/user-attachments/assets/92a2b340-798c-4a6b-9abb-01c1d95af665)
